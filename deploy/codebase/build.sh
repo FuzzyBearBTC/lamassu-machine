@@ -3,8 +3,8 @@ set -e
 
 SUB_DIR=codebase
 SCRIPT_DIR=$(dirname $0)
-
-EXPORT_ROOT=${1-$LAMASSU_EXPORT}
+MACHINE_DIR=$SCRIPT_DIR/../..
+EXPORT_ROOT=$MACHINE_DIR/build
 
 if [ -z "$EXPORT_ROOT" ]
   then
@@ -18,7 +18,6 @@ fi
 EXPORT_BASE=$EXPORT_ROOT/$SUB_DIR
 EXPORT_DIR=$EXPORT_BASE/subpackage
 EXPORT_SCRIPT_DIR=$EXPORT_BASE/package
-MACHINE_DIR=$SCRIPT_DIR/../..
 TARGET_MACHINE_DIR=$EXPORT_DIR/lamassu-machine
 HARDWARE_DIR=$MACHINE_DIR/hardware/codebase
 UPDATESCRIPT=$SCRIPT_DIR/updateinit.js
@@ -27,7 +26,8 @@ rm -rf $EXPORT_SCRIPT_DIR
 rm -rf $EXPORT_DIR
 mkdir -p $EXPORT_DIR
 mkdir -p $EXPORT_SCRIPT_DIR
-mkdir -p $TARGET_MACHINE_DIR
+mkdir -p $TARGET_MODULES_DIR
+mkdir -p $TARGET_MACHINE_DIR/bin
 
 # Needed for updateinit script on target device
 cp $MACHINE_DIR/node_modules/async/lib/async.js $EXPORT_SCRIPT_DIR
@@ -40,10 +40,11 @@ cp $MACHINE_DIR/software_config.json $TARGET_MACHINE_DIR
 cp $MACHINE_DIR/licenses.json $TARGET_MACHINE_DIR
 cp $MACHINE_DIR/package.json $TARGET_MACHINE_DIR
 cp -r $MACHINE_DIR/lib $TARGET_MACHINE_DIR
-cp -r $MACHINE_DIR/bin $TARGET_MACHINE_DIR
+cp $MACHINE_DIR/bin/lamassu-machine $TARGET_MACHINE_DIR/bin
+
 cp -r $MACHINE_DIR/ui $TARGET_MACHINE_DIR
-cp -r $MACHINE_DIR/node_modules $TARGET_MACHINE_DIR
-cp -r $HARDWARE_DIR $EXPORT_DIR/hardware
+$MACHINE_DIR/deploy/copy-modules.js $MACHINE_DIR/node_modules $TARGET_MODULES_DIR
+cp -a $HARDWARE_DIR $EXPORT_DIR/hardware
 
 # Remove locally installed files
 rm -rf $TARGET_MACHINE_DIR/ui/css/fonts/*
@@ -51,19 +52,11 @@ rm -rf $TARGET_MACHINE_DIR/ui/css/fonts/*
 # Copy back basic fonts
 cp $MACHINE_DIR/ui/css/fonts/brandon_txt* $TARGET_MACHINE_DIR/ui/css/fonts
 cp $MACHINE_DIR/ui/css/fonts/SourceCodePro-Regular.ttf $TARGET_MACHINE_DIR/ui/css/fonts
-cp $MACHINE_DIR/ui/css/fonts/NotoKufiArabic* $TARGET_MACHINE_DIR/ui/css/fonts
-
-# Natively compiled modules, will be copied from hardware-specific directories
-rm -rf $TARGET_MODULES_DIR/ws
-rm -rf $TARGET_MODULES_DIR/serialport
-rm -rf $TARGET_MODULES_DIR/seret
-rm -rf $TARGET_MODULES_DIR/manatee
-rm -rf $TARGET_MODULES_DIR/supyo
-rm -rf $TARGET_MODULES_DIR/jpeg
+cp $MACHINE_DIR/ui/css/fonts/Noto* $TARGET_MACHINE_DIR/ui/css/fonts
+cp -a $MACHINE_DIR/ui/css/fonts/SourceSansPro $TARGET_MACHINE_DIR/ui/css/fonts
 
 # Reduce package size, these are unneeded
 rm -rf $TARGET_MODULES_DIR/clim/example
-rm -rf $TARGET_MODULES_DIR/sha512crypt-node
 
 # Note, this is only needed for early release aaeons
 mkdir -p $EXPORT_DIR/native/aaeon/scripts
@@ -75,3 +68,5 @@ git --git-dir=$MACHINE_DIR/.git rev-parse --short HEAD > $EXPORT_DIR/revision.tx
 cat $EXPORT_DIR/revision.txt
 
 node $SCRIPT_DIR/../build.js $EXPORT_BASE
+
+rm -rf $EXPORT_DIR

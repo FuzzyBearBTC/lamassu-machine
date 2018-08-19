@@ -66,6 +66,7 @@ class FakeID003
 		@dev, @slave = PTY.open
 		@slave.raw!
 		puts @slave.path
+		STDOUT.flush
 
 		loop do
 			process_command
@@ -108,6 +109,7 @@ class FakeID003
 			@escrowed = 5
 			@rejecting = :refuse
 		elsif number == 4
+			@escrowed = 1
 			@rejecting = :reject
 		else
 			@escrowed = i
@@ -182,8 +184,9 @@ class FakeID003
 	end
 
 	def bill_handling
-		if @t0 && (Time.now - @t0) > 1
+		if @t0 && (Time.now - @t0) > 3
 			puts 'timeout'
+			STDOUT.flush
 			set_state @next_state
 			@next_state = nil
 			@t0 = nil

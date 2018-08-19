@@ -12,6 +12,36 @@ npm install
 
 **Prerequisites**: You'll need Node.js and Ruby installed on your machine. There packages for these on most operating systems. You'll also need compiling tools. See here: https://github.com/TooTallNate/node-gyp#installation.
 
+### Mac OS X local install for testing and development
+
+```
+git clone https://github.com/lamassu/lamassu-machine.git
+cd lamassu-machine
+
+brew install nvm
+# then following brew's install notes on nvm
+nvm install 0.10
+nvm use 0.10
+rm -rf ./node_modules
+# remove jpeg and manatee from package.json
+# comment out in lib/brain.js around line 850: this._ensureRaqiaRegistration so that it goes to _idleTwoWay without requiring a raqia registration
+npm install --no-optional
+npm install mv
+
+./setup
+
+cp licenses.sample.json licenses.json
+
+# in a separate window start a fake bill validator, and use the outputted ttys number on the next command, like /dev/ttys008
+ruby fake_id003.rb
+
+node bin/lamassu-machine --mockBTC 1KAkLnhU1BpvgjQUgLk1HF4PEgh4asFNS8 --mockBv /dev/ttys008 --mockTrader --mockCam --mockBillDispenser
+
+open ui/start.html
+```
+
+To get a cursor comment out `body { cursor: none }` in ui/css/main.css
+
 ## Running
 
 First, run the mock bill validator in a separate terminal window:
@@ -25,8 +55,8 @@ Use that to run the main program, called lamassu-machine, along with a Bitcoin
 address **you control**:
 
 ```
-node bin/lamassu-machine --mock-btc 1KAkLnhU1BpvgjQUgLk1HF4PEgh4asFNS8 \
---mock-bv '/dev/ttys009' --mock-trader
+node bin/lamassu-machine --mockBTC 1KAkLnhU1BpvgjQUgLk1HF4PEgh4asFNS8 \
+--mockBv /dev/ttys009 --mockTrader --mockCam
 ```
 
 This should output something like this:
@@ -68,16 +98,6 @@ When the screen asks you to insert a bill, navigate to the terminal
 where you opened the mock bill validator, and input **1**<kbd>Enter</kbd>
 to insert a one dollar bill.
 
-## Installing additional fonts
-
-To install a new font family, for instance Japanese, do:
-
-```
-deploy/fonts/install deploy/fonts/css/source-han-sans-jp.css ~/Downloads/fonts/SourceHanSansJP-1.000
-```
-
-```~/Downloads/fonts/SourceHanSansJP-1.000``` is the directory that contains the actual font files.
-
 ## Mocking
 
 In order to easily test **lamassu-server**, you can use the ```mock``` command.
@@ -94,3 +114,11 @@ node bin/mock.js -a 1KAkLnhU1BpvgjQUgLk1HF4PEgh4asFNS8
 ```
 
 This will send $1 worth of bitcoins to 1KAkLnhU1BpvgjQUgLk1HF4PEgh4asFNS8, via lamassu-server.
+
+Here's how to run it with a mock bill validator, a mock camera, currency forced to USD,
+a mock bill dispenser, and using an HTTP connection to a local server. First, set
+```brain.mockBTC``` to a bitcoin address in device_config.json. Then:
+
+```
+node bin/lamassu-machine --mockBv /dev/ttys009 --mockCam --fiat USD --mockBillDispenser --http
+```
