@@ -6,7 +6,7 @@
     "bitcoin-address": "~0.1.0",
     "bluebird": "~2.4.2",
     "boom": "~2.6.1",
-    "bunyan": "~0.22.1",
+    "bunyan": "~1.8.13",
     "clim": "*",
     "findit": "~1.1.0",
     "fs-extra": "^0.14.0",
