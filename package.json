@@ -2,7 +2,7 @@
   "name": "lamassu-machine",
   "version": "0.5.26",
   "dependencies": {
-    "async": "~0.2.9",
+    "async": "~3.2.2",
     "bitcoin-address": "~0.1.0",
     "bluebird": "~2.4.2",
     "boom": "~2.6.1",
@@ -21,7 +21,7 @@
     "node-forge": "~0.2.36",
     "node-uuid": "~1.4.2",
     "ramda": "^0.19.1",
-    "serialport": "^1.4.10",
+    "serialport": "^2.1.1",
     "supyo": "~0.2.0",
     "tar": "~0.1.8",
     "wreck": "~5.1.0",
