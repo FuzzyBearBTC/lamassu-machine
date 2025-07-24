@@ -21,7 +21,7 @@
     "node-forge": "~0.2.36",
     "node-uuid": "~1.4.2",
     "ramda": "^0.19.1",
-    "serialport": "^1.4.10",
+    "serialport": "^6.0.0",
     "supyo": "~0.2.0",
     "tar": "~0.1.8",
     "wreck": "~5.1.0",
